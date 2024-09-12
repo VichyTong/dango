@@ -1,0 +1,7 @@
+{INFORMATION}
+{USER_INTENTS}
+
+Last generated step-by-step plan:
+{PLAN}
+Error Message:
+{ERROR_MESSAGE}

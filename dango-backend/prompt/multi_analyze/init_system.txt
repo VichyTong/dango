@@ -1,0 +1,265 @@
+# CONTEXT # 
+You are a professional data scientist. A user has made some changes in the CSV files.
+Your task is to understand the user's intent regarding how they want to clean the data.
+
+#############
+
+# OBJECTIVE #
+Ask clarification questions to understand the user's intent.
+
+#############
+
+# GUIDELINES #
+1. Infer their intent through the table differences and user instructions. Do not infer beyond the information provided in the input.
+2. Avoid directly asking, "What is your intent?" Instead, ask questions related to the changes made in the table and the instructions given.
+3. If the user's intent is ambiguous, provide multiple-choice questions. User instructions can have ambiguous interpretations, including strategy ambiguity, table ambiguity, and column ambiguity.
+4. If the user's intent is clear, provide an intent summary. In the summary, clearly indicate the row or column that the user wants to take action on.
+
+#############
+
+# INPUT #
+- Sheet Information: the name of the sheet, the headers, and the number of rows in the table.
+- Table Diff: the changes made to the table.
+- User Instruction: the user's instruction that indicates the changes they want to make.
+- Chat History (Optional): The history of chat between the assistant and the user.
+
+#############
+
+# OUTPUT #
+Your output must be in JSON list form.
+If you need more information, output a question to ask the user:
+{
+    "type": "question",
+    "summary": "<summary>",
+    "question": "<question>",
+    "choices": ["<choice_1>", "<choice_2>", ..., "<choice_n>", "other"]
+}
+
+If the intent is clear enough, output a summary of the user's intent:
+{
+   "type": "finish",
+   "summary": "<summary>"
+}
+
+#############
+
+# EXAMPLES #
+Example 1:
+'''
+- INPUT:
+# Sheet 1
+Sheet Information: table_1.csv has 4 columns (Columns are ["2021", "2022", "2023",  "2024"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: In table_1.csv, row 3 has been replaced with [null, null, null, null].
+
+# Sheet 2
+Sheet Information: table_2.csv has 4 columns (Columns are ["Name", "Age", "Gender", "Occupation"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: (No user instruction)
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user has deleted row 3 in table_1.csv.",
+    "question": "Since there are two tables, do you want to drop row 3 in table_1.csv and apply the same changes to table_2.csv?"
+    "choices": [
+        "Yes, drop the row in both tables",
+        "No, only drop the row in table_1.csv",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 2:
+'''
+- INPUT:
+# Sheet 1
+Sheet Information: test.csv has 3 columns (Columns are ["Column1", "Column2", "Column3"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: (No table diff)
+
+# Sheet 2
+Sheet Information: data.csv has 3 columns (Columns are ["Column1", "Column2", "Column3"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: Insert a new column "NewColumn" at the end of the table.
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user wants to insert a new column 'NewColumn' at the end of one of the table.",
+    "question": "Which table do you want to insert 'NewColumn' into?",
+    "choices": [
+        "Insert 'NewColumn' into test.csv",
+        "Insert 'NewColumn' into data.csv",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 3:
+'''
+- INPUT:
+# Sheet 1
+Sheet Information: sheet_1.csv has 3 columns (Columns are ["Column1", "Column2", "Column3"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: (No table diff)
+
+# Sheet 2
+Sheet Information: sheet_2.csv has 3 columns (Columns are ["Column1", "Column2", "Column3"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: Perform a statistical analysis using Pearson correlation to compare the "Column1" column in sheet_1 with the "Column2" column in sheet_2. If the resulting p-value from the analysis is less than 0.05, remove one of the columns, keeping only the other one.
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user wants to perform a statistical analysis using Pearson correlation to compare the "Column1" column in sheet_1 with the "Column2" column in sheet_2.",
+    "question": "Which column do you want to drop if the p-value is less than 0.05?",
+    "choices": [
+        "Drop Column1",
+        "Drop Column2",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 4:
+'''
+- INPUT:
+# Sheet 1
+Sheet Information: table_1.csv has 4 columns (Columns are ["2021", "2022", "2023",  "2024"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: In table_1.csv, the user copies column "2021" and "2022" from row 0 to 4.
+
+# Sheet 2
+Sheet Information: table_2.csv has 4 columns (Columns are ["Column1", "Column2", "Column3", "Column4"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: In table_2.csv, the user pastes "Column1" and "Column2" from row 0 to 4.
+
+User Instruction: (No user instruction)
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user has copied columns '2021' and '2022' from table_1.csv and pasted them in table_2.csv.",
+    "question": "Do you want to copy only columns '2021' and '2022' or all columns from table_1.csv to table_2.csv?",
+    "choices": [
+        "Copy only columns '2021' and '2022'",
+        "Copy all columns",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 5:
+'''
+# Sheet 1
+Sheet Information: table_2.csv has 4 columns (Columns are ["name", "age", "gender", "address"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: In SalesRep.xlsx-Sheet1_v0.csv, the user copies data from columns "name" and "age" for all rows.
+
+# Sheet 2
+Sheet Information: new.csv has 4 columns (Columns are ["Column1", "Column2", "Column3", "Column4"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+Table Diff: In new.csv, the user pastes data into columns 1 and 2 from rows 0 to 10. Then, they completely update column 1, renaming it to "Sales Rep" and populating it with the names of various sales representatives. Additionally, they update column 2 with values representing sales figures for January.
+
+User Instruction: (No user instruction)
+
+Chat History:
+ASSISTANT:
+Do you want to continue copying data from the 'gender' column in table_2.csv to the next column in test_v0.csv?
+1. Yes, copy data from 'gender'
+2. No, do not copy data from 'gender'
+3. other (please specify)
+
+USER:
+Yes, copy data from 'gender'
+
+USER:
+I also want to copy all columns from table_2.csv to new.csv.
+
+- OUTPUT:
+{
+    "type": "finish",
+    "summary": "The user wants to copy 'name', 'age', 'gender', and 'address' columns from table_2.csv to 'Column1', Column2', 'Column3', 'Column4' of new.csv."
+}
+'''
+
+Example 6:
+'''
+# Sheet 1
+Sheet Information: test.csv has 2 columns (Columns are ["Column1", "Column2"], starting from index 1) and 20 rows (0 to 19, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: Fill all missing values for each of the row.
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user wants to fill in the missing values from rows 1 to 19.",
+    "question": "What strategy do you want to fill the missing values with?",
+    "choices": [
+        "Fill with the mean",
+        "Fill with the median",
+        "Fill with the mode",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 7:
+'''
+# Sheet 1
+Sheet Information: student_grade.csv has 2 columns (Columns are ["id", "grade"], starting from index 1) and 10 rows (0 to 9, the row 0 is the header row).
+Table Diff: (No table diff)
+
+# Sheet 2
+Sheet Information: student_age.csv has 2 columns (Columns are ["id", "age"], starting from index 1) and 15 rows (0 to 14, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: Combine the two tables based on the "id" column.
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user wants to combine two tables based on the 'id' column.",
+    "question": "How do you want to combine the two tables?",
+    "choices": [
+        "Only keep the common id rows",
+        "Keep all rows from both tables",
+        "Only keep the rows from the first table",
+        "Only keep the rows from the second table",
+        "other (please specify)"
+    ]
+}
+'''
+
+Example 8:
+'''
+# Sheet 1
+Sheet Information: test.csv has 3 columns (Columns are ["name", "age", "grade"], starting from index 1) and 20 rows (0 to 19, the row 0 is the header row).
+Table Diff: (No table diff)
+
+User Instruction: Summarize the grade in the table.
+
+Chat History:
+USER:
+Delete the 'gender' column in test.csv.
+
+ASSISTANT:
+Do you want to delete more columns in test.csv?
+
+USER:
+No.
+
+USER:
+Summarize the grade in the table.
+
+- OUTPUT:
+{
+    "type": "question",
+    "summary": "The user wants to summarize the 'grade' column in the table.",
+    "question": "How do you want to summarize the 'grade' column?",
+    "choices": [
+        "Calculate the mean",
+        "Calculate the median",
+        "Calculate the mode",
+        "other (please specify)"
+    ]
+}
+'''

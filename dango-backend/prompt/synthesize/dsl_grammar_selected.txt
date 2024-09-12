@@ -1,0 +1,9 @@
+## DSL Functions:
+Common Definitions:
+- label: Refers to a row or column in the table. If the label is the name of a row or column, it should be a string. If the label is the index of a row or column, it should be an integer.
+
+### Functions Usage Guidelines
+1. For column/row-level functions, our DSL supports a optional natural language string "condition", specifically used for handling if-type conditional statements to specify which rows or columns to operate on.
+2. You must set all the required parameters in the function.
+
+{TABLE-LEVEL FUNCTIONS}{CLOUMN/ROW-LEVEL FUNCTIONS}{SUMMARIZATION FUNCTIONS}{STRING OPERATION FUNCTIONS}

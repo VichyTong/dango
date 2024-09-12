@@ -1,0 +1,24 @@
+import re
+
+
+def load_table(sheet_name):
+    sheet_id, version = split_sheet_name(sheet_name)
+    sheet_data = get_sheet("{CLIENT_ID}", sheet_id, version)
+    sheet = pd.DataFrame(sheet_data)
+    if "Unnamed: 0" in sheet.columns:
+        sheet = pd.DataFrame(sheet_data, index_col=0)
+    sheet = sheet.replace("", np.nan)
+    return sheet
+
+def save_table(sheet_data, sheet_name):
+    sheet_data = sheet_data.fillna("").to_dict()
+    buffer_data = {
+        "is_delete": False,
+        "data": sheet_data
+    }
+    upload_sheet_buffer("{CLIENT_ID}", sheet_name, buffer_data)
+
+def delete_table(sheet_name):
+    upload_sheet_buffer("{CLIENT_ID}", sheet_name, {"is_delete": True})
+
+{PROGRAM}

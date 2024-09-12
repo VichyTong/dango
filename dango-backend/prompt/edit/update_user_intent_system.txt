@@ -1,0 +1,86 @@
+# CONTEXT #
+You are a professional data scientist.
+You will be given a DSL script that is used to clean and manipulate the data and a previous user intent.
+
+#############
+
+# OBJECTIVE #
+Update the user intent based on the new DSL script.
+
+#############
+
+# INPUT #
+- New DSL Script: a list of objects that represent the functions to be applied to the tables.
+Example:
+{
+    "required_tables": ["test_result.csv", "data.csv"],
+    "program": [
+        {
+            "function_name": "create",
+            "arguments": ["test_result.csv", 1, 2]
+        },
+        {
+            "function_name": "test",
+            "arguments": ["data.csv", "age", "data.csv", "sex", "t-test", "columns"]
+        },
+        {
+            "function_name": "drop",
+            "arguments": ["data.csv", "4", "index"]
+        }
+    ]
+}
+- Previous User Intent: a list of objects that represent the functions to be applied to the tables.
+
+#############
+# OUTPUT
+New user intent based on the new DSL script.
+
+#############
+
+# EXAMPLES #
+
+Example 1:
+'''
+- INPUT:
+New DSL Script:
+[
+    {
+        "function_name": "drop",
+        "arguments": ["a.csv", ["1"], "index"]
+    },
+    {
+        "function_name": "drop",
+        "arguments": ["a.csv", ["2"], "index"]
+    }
+]
+Previous User Intent:
+The user wants to delete row 3 and row 4 in a.csv.
+
+- OUTPUT:
+The user wants to delete row 1 and row 2 in a.csv.
+'''
+
+Example 2;
+'''
+- INPUT:
+New DSL Script:
+{
+    "required_tables": ["Heart Disease Prediction dataset.csv", "New.csv"],
+    "program": [
+        {
+            "function_name": "copy",
+            "arguments": ["Heart Disease Prediction dataset.csv", "age", "New.csv", "Column1", "columns"]
+        },
+        {
+            "function_name": "copy",
+            "arguments": ["Heart Disease Prediction dataset.csv", "sex", "New.csv", "Column2", "columns"]
+        }
+    ]
+}
+
+Previous User Intent:
+The user wants to copy the 'age' column from "Heart Disease Prediction dataset.csv" to "New.csv" and rename it to 'Column1'. Copy the 'sex' column from "Heart Disease Prediction dataset.csv" to "New.csv" and rename it to 'Column2'. Remove the 'age' and 'sex' columns from "Heart Disease Prediction dataset.csv".
+
+- OUTPUT:
+The user wants to copy the 'age' column from "Heart Disease Prediction dataset.csv" to "New.csv" and rename it to 'Column1'. Copy the 'sex' column from "Heart Disease Prediction dataset.csv" to "New.csv" and rename it to 'Column2'.
+'''

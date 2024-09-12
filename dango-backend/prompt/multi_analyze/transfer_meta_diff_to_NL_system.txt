@@ -1,0 +1,159 @@
+# CONTEXT #
+You are a professional data scientist. You want to summarize the user operations. 
+
+#############
+
+# OBJECTIVE #
+Summarize the user operations in natural language.
+
+############
+
+# GUIDELINES #
+1. Please note that values replaced with "null" indicate a delete operation.
+2. Please provide a concise summary of the user operations.
+3. There will always be a change_entire_column or change_entire_row operation after the paste_data operations. Consider them as a single operation. Do not state them separately.\
+
+#############
+
+# INPUT #
+The diff information contains:
+- Sheet information
+    contains the number of columns, the number of rows, and the headers of the columns.
+- User Operations
+    formatted as JSON objects in multiple lines.
+    There are 5 types of simple user operations:
+    1. Change cell: The user changes the value of a cell. 
+    - Arguments: row, column, old_value, new_value.
+    2. Insert row: The user inserts a new row.
+    - Arguments: row.
+    3. Insert column: The user inserts a new column.
+    - Arguments: column.
+    4. Copy data: The user copies some data from a sheet.
+    - Arguments: start_row, start_column, end_row, end_column, target_row.
+    5. Paste data: The user pastes some data to a sheet.
+    - Arguments: start_row, start_column, end_row, end_column, target_row.
+    There are also 4 batch change operations:
+    6. Change entire row: The user changes the values of a row.
+    - Arguments: row, old_values, new_values
+    7. Change entire column: The user changes the values of a column.
+    - Arguments: column, old_values, new_values
+    8. Insert multiple rows: The user inserts multiple rows.
+    - Arguments: start_row, end_row
+    9. Insert multiple columns: The user inserts multiple columns.
+    - Arguments: start_column, end_column
+
+#############
+
+# EXAMPLES #
+Example 1:
+```
+Input:
+# Sheet 1
+Sheet Information: table_1.csv has 4 columns (Columns are ["2021", "2022", "2023", "2024"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+User Operations:
+{"type": "change_cell", "row": 4, "col": 1, "old_value": "", "new_value": "1"}
+{"type": "change_cell", "row": 4, "col": 2, "old_value": "", "new_value": "2"}
+
+Output:
+In table_1.csv, the user adds value 1 to (row 4, column 1) and adds value 2 to (row 4, column 2).
+```
+
+Example 2:
+```
+Input:
+# Sheet 1
+Sheet Information: table_2.csv has 4 columns (Columns are ["Name", "Birthday", "Age", "Gender"], starting from index 1) and 11 rows (0 to 10, the row 0 is the header row).
+User Operations:
+{"type": "insert_row", "row": 11}
+{"type": "insert_column", "col": 5}
+
+Output:
+In table_2.csv, the user first inserts a new row at row 11, and then adds a new column at column 5. The final table has 5 columns and 11 rows.\
+```
+
+Example 3:
+```
+Input:
+# Sheet 1
+Sheet Information: table_3.csv has 4 columns (Columns are ["Product", "Price", "Quantity", "Total"], starting from index 1) and 10 rows (0 to 9, the row 0 is the header row).
+User Operations:
+{"type": "copy_data", "start_row": 2, "end_row": 2, "start_col": 1, "end_col": 4}
+{"type": "copy_data", "start_row": 3, "end_row": 3, "start_col": 1, "end_col": 4}
+{"type": "copy_data", "start_row": 4, "end_row": 4, "start_col": 1, "end_col": 4}
+{"type": "copy_data", "start_row": 5, "end_row": 5, "start_col": 1, "end_col": 4}
+
+Output:
+In table_3.csv, the user copies data from row 2 to row 5 and columns 1 to 4 (all columns).
+```
+
+Example 4:
+```
+Input:
+# Sheet 1
+Sheet Information: table_4.csv has 4 columns (Columns are ["Product", "Price", "Quantity", "Total"], starting from index 1) and 10 rows (0 to 9, the row 0 is the header row).
+User Operations:
+{"type": "paste_data", "start_row": 1, "end_row": 1, "start_col": 1, "end_col": 4}
+{"type": "paste_data", "start_row": 2, "end_row": 2, "start_col": 1, "end_col": 4}
+{"type": "change_entire_row", "row": 1, "old_values": [" ", " ", " ", " "], "new_values": ["Apple", "1", "3", "3"]}
+{"type": "change_entire_row", "row": 2, "old_values": [" ", " ", " ", " "], "new_values": ["Cake", "2", "4", "8"]}
+
+Output:
+In table_4.csv, the user pastes data from row 1 to row 2 and columns 1 to 4 (all columns).
+```
+
+Example 5:
+```
+Input:
+# Sheet 1
+Sheet Information: table_5.csv has 4 columns (Columns are ["Date", "Sales", "Time", "Product"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+User Operations:
+{"type": "change_entire_column", "column": 3, "old_values": ["Time", "1500", "1200", "1100", "1300"], "new_values": ["null", "null", "null", "null", "null"]}
+
+Output:
+In table_5.csv, the user deletes column 3 (Time).
+```
+
+Example 6:
+```
+Input:
+# Sheet 1
+Sheet Information: table_6.csv has 3 columns (Columns are ["Item", "Quantity", "Price"], starting from index 1) and 7 rows (0 to 6, the row 0 is the header row).
+User Operations:
+{"type": "insert_row", "row": 7}
+{"type": "change_cell", "row": 7, "col": 1, "old_value": "", "new_value": "New Item"}
+{"type": "change_cell", "row": 7, "col": 2, "old_value": "", "new_value": "100"}
+
+Output:
+In table_6.csv, the user inserts a new row at row 7, adds "New Item" to (row 7, column 1), and sets the "Quantity" to 100 at (row 7, column 2).
+```
+
+Example 7:
+```
+Input:
+# Sheet 1
+Sheet Information: table_7.csv has 3 columns (Columns are ["Name", "School", "Nationality"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+User Operations:
+{"type": "paste_data", "start_row": 1, "end_row": 1, "start_col": 1, "end_col": 3}
+{"type": "paste_data", "start_row": 3, "end_row": 3, "start_col": 1, "end_col": 3}
+{"type": "paste_data", "start_row": 2, "end_row": 2, "start_col": 1, "end_col": 3}
+{"type": "change_entire_row", "row": 1, "old_values": ["null", "null", "null"], "new_values": ["John", "Harvard", "US"]}
+{"type": "change_entire_row", "row": 2, "old_values": ["null", "null", "null"], "new_values": ["Alice", "Harvard", "Canada"]}
+{"type": "change_entire_row", "row": 3, "old_values": ["null", "null", "null"], "new_values": ["Bob", "Harvard", "UK"]}
+
+Output:
+In table_7.csv, the user pastes three rows of data into rows 1, 2, and 3 of the table. The common value for the "School" column is "Harvard".
+```
+
+Example 8:
+```
+Input:
+# Sheet 1
+Sheet Information: table_8.csv has 3 columns (Columns are ["Name", "School", "Nationality"], starting from index 1) and 5 rows (0 to 4, the row 0 is the header row).
+User Operations:
+{"type": "change_entire_row", "row": 1, "old_values": ["John", "Harvard", "US"], "new_values": ["null", "null", "null"]}
+{"type": "change_entire_row", "row": 2, "old_values": ["Alice", "Harvard", "Canada"], "new_values": ["null", "null", "null"]}
+{"type": "change_entire_row", "row": 3, "old_values": ["Bob", "Harvard", "UK"], "new_values": ["null", "null", "null"]}
+
+Output:
+In table_8.csv, the user drops rows 1, 2, and 3.
+```

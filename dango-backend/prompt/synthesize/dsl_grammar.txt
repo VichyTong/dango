@@ -1,0 +1,230 @@
+## DSL Functions:
+Common Definitions:
+- label: Refers to a row or column in the table. If the label is the name of a row or column, it should be a string. If the label is the index of a row or column, it should be an integer.
+
+### Functions Usage Guidelines
+1. For column/row-level functions, our DSL supports a optional natural language string "condition", specifically used for handling if-type conditional statements to specify which rows or columns to operate on.
+2. You must set all the required parameters in the function.
+
+### Table-level Functions
+
+1. blank_table(row_number, column_number): Returns an empty table with the specified number of rows and columns.
+Parameters:
+- row_number (int, required): The number of rows in the table.
+- column_number (int, required): The number of columns in the table.
+Output:
+- A pandas DataFrame.
+
+2. delete_table(table_name): Deletes a table from the database.
+Parameters:
+- table_name (str, required): The name of the table to be deleted.
+Output:
+- None
+
+3. pivot_table(table, index, columns, values, aggfunc): Reshapes the table so that each unique value in columns becomes a separate column, with index values as row headers, and the corresponding values filled in their respective cells.
+Parameters:
+- table (DataFrame, required): The table to pivot.
+- index (str, required): The column name to use as the new row headers.
+- columns (str, required): The column name to use as the new column headers.
+- values (str, required): The column name whose values will fill the new table.
+- aggfunc (str, required): The aggregation function to apply to the values. Common options are 'first', 'sum', 'mean', etc.
+Output:
+- A pandas DataFrame.
+
+4. merge(table_a, table_b, how, on): Merges two tables based on a common column.
+Parameters:
+- table_a (DataFrame, required): The first table to merge.
+- table_b (DataFrame, required): The second table to merge.
+- how(str, required): The type of merge to be performed. Options are 'left', 'right', 'outer', 'inner', or 'fuzzy'.
+- on(str, optional): Column or index level names to join on. Must be present in both tables. If 'on' is None, the merge will be performed using the intersection of the column names from both tables.
+Output:
+- A pandas DataFrame.
+
+5. subtable(table, labels, axis): Extracts a subtable from a DataFrame based on specified rows or columns.
+Parameters:
+- table (DataFrame, required): The table from which rows or columns will be extracted.
+- labels (list[int/str], required): A list of row or column labels to be extracted.
+- axis (str or int, required):
+    - 0 or "index": Indicates that the labels are row labels.
+    - 1 or "columns": Indicates that the labels are column labels.
+Output:
+- A pandas DataFrame.
+
+6. transpose(table): Transposes the given table.
+Parameters:
+- table (DataFrame, required): The table to be transposed.
+Output:
+- A pandas DataFrame.
+
+### Column/Row-level Functions
+
+1. insert(table, index, index_name, axis): Inserts an empty row or column at the specified index in the table. Other rows or columns will be moved down or to the right.
+Parameters:
+- table (DataFrame, required): The table to insert the row or column into.
+- index (int, required): The position at which the new row or column will be inserted. For example, if index is 1, the new row or column will be at position 1.
+- index_name (str, required): The name of the new row or column.
+- axis (str or int, required):
+    - 0 or "index": Indicates that a row will be inserted.
+    - 1 or "columns": Indicates that a column will be inserted.
+Output:
+- A pandas DataFrame.
+
+2. drop(table, label, axis): Drops one or more rows or columns from the table.
+Parameters:
+- table (DataFrame, required): The table from which the row(s) or column(s) will be dropped.
+- label (str or int or list[str] or list[int] or "ALL", required): The label or list of labels of the row(s) or column(s) to be dropped. If the value is "ALL", all rows or columns will be dropped.
+- axis (str or int, required):
+    - 0 or "index": Indicates that one or more rows will be dropped.
+    - 1 or "columns": Indicates that one or more columns will be dropped.
+Output:
+- A pandas DataFrame.
+
+3. assign(table, start_row_index, end_row_index, start_column_index, end_column_index, values): Assigns fixed constant values to specific cells in the table.
+Parameters:
+- table (DataFrame, required): The table to which the values will be assigned.
+- start_row_index, end_row_index (int, required): The range of row indices where the values will be assigned. Indexing starts from 0 and must be int.
+- start_column_index, end_column_index (int, required): The range of column indices where the values will be assigned. Indexing starts from 0 and must be int.
+- values (list[list[int/float/str]] or int/float/str, required): The constant value(s) to assign to the specified cell(s). If "values" is a list of list, the values are assigned in order from top to bottom, left to right. If "values" is a single value, it is assigned to all cells in the specified range.
+Output:
+- A pandas DataFrame.
+
+4. move(origin_table, origin_label, target_table, target_label, axis): Moves a row or column from the origin table to the target table.
+Parameters:
+- origin_table (DataFrame, required): The table from which the row or column will be moved.
+- origin_label (int or str, required): The index or name of the row or column to be moved in the origin table. Index starts from 0 and must be int.
+- target_table (DataFrame, required): The table to which the row or column will be moved.
+- target_label (int or str, required): The index or name at which the row or column will be inserted in the target table. Index starts from 0 and must be int.
+- axis (str or int, required):
+    - 0 or "index": Indicates that the label is a row label.
+    - 1 or "columns": Indicates that the label is a column label.
+Output:
+- Updated origin table with the row or column removed.
+- Updated target table with the row or column added.
+
+5. copy(origin_table, origin_label, target_table, target_label, axis): Copies a row or column from the origin table to the target table at the specified label.
+Parameters:
+- origin_table (DataFrame, required): The table from which the row or column will be copied.
+- origin_label (str or int, required): The label of the row or column to be copied.
+- target_table (DataFrame, required): The table to which the row or column will be copied.
+- target_label (str or int, required): The label at which the row or column will be placed in the target table. If this label already exists, the copied row or column will overwrite the existing one.
+- axis (str or int, required): Specifies the axis along which the copy operation is performed.
+    - 0 or "index": Copy a row.
+    - 1 or "columns": Copy a column.
+Output:
+- A pandas DataFrame containing the target table with the copied row/column.
+
+6. swap(table_a, label_a, table_b, label_b, axis): Swaps rows or columns between two tables.
+Parameters:
+- table_a (DataFrame, required): The first table from which the row or column will be swapped.
+- label_a (str or int, required): The label of the row or column to be swapped in the first table.
+- table_b (DataFrame, required): The second table from which the row or column will be swapped.
+- label_b (str or int, required): The label of the row or column to be swapped in the second table.
+- axis (str or int, required):
+    - 0 or "index": Indicates to swap rows.
+    - 1 or "columns": Indicates to swap columns.
+Output:
+- A pandas DataFrame containing the first table with the swapped row or column.
+- A pandas DataFrame containing the second table with the swapped row or column.
+
+7. rearrange(table, by_values, by_axis): Rearranges the rows or columns of the table based on the specified order.
+Parameters:
+- table (DataFrame, required): The table to rearrange.
+- label (str or int, required): The row or column to use as the basis for rearranging the rows or columns.
+- by_axis (str or int, required):
+    - 0 or "index": Rearranges the rows based on the values in the specified column.
+    - 1 or "columns": Rearranges the columns based on the values in the specified row.
+Output: 
+- A pandas DataFrame.
+
+8. divide(table, by, axis): Divides the table by the specified row or column, returning a list of tables.
+Parameters:
+- table (DataFrame, required): The table to be divided.
+- by(int/str, required): The label of the row or column by which the table will be divided.
+- axis (str or int, required):
+    - 0 or "index": Indicates that the table will be divided by a row. Set axis to 0 if by is a row label.
+    - 1 or "columns": Indicates that the table will be divided by a column. Set axis to 1 if by is a column label.
+Output:
+- A list of pandas DataFrames.
+
+9. fill(table, method, labels): Fills missing values in the table using the specified method.
+Parameters:
+- table (DataFrame, required): The table in which missing values will be filled.
+- labels (list[str] or str or "ALL", required): The column label or list of column labels where missing values will be filled. If the value is "ALL", missing values in all columns will be filled.
+- method (str, required): The method to use for filling missing values. Choose from 'mean', 'median', 'mode'.
+Output:
+- A pandas DataFrame.
+
+### Summarization Functions
+
+1. aggregate(table, functions, axis): Aggregates the table using a specified function.
+Parameters:
+- table (DataFrame, required): table to be aggregated.
+- functions (dict, required): Keys are the names of rows or columns, and values are lists of function names. Example: {'A': ['sum', 'mean'], 'B': ['min', 'max']}.
+- axis (str or int, required):
+    - 0 or "index": Applies the aggregate operations on rows, with the keys in the functions dictionary corresponding to row names.
+    - 1 or "columns": Applies the aggregate operations on columns, with the keys in the functions dictionary corresponding to column names.
+Output:
+- A pandas DataFrame.
+
+2. test(table_a, label_a, table_b, label_b, strategy, axis): Compares two labels using the specified statistical test and returns a tuple (statistic, p_value).
+Parameters:
+- table_a (DataFrame, required): The first table on which the test will be performed.
+- label_a (str or int, required): The label of the first row or column to be tested in the first table.
+- table_b (DataFrame, required): The second table on which the test will be performed.
+- label_b (str or int, required): The label of the second row or column to be tested in the second table.
+- strategy (str, required): The statistical test to perform. Options include 't-test', 'z-test', 'chi-squared', 'pearson-correlation'.
+- axis (str or int, required):
+    - 0 or "index": Indicates that rows will be tested.
+    - 1 or "columns": Indicates that columns will be tested.
+Output:
+- A tuple (statistic, p_value).
+
+3. count(table, label, value, axis): Counts the occurrences of a specified value within a given column or row in a DataFrame, then stores the result in a new DataFrame.
+Parameters:
+- table (DataFrame, required): The DataFrame to operate on.
+- label (str or int, required): The column name (if axis=0) or row label/index (if axis=1) where the value should be counted.
+- value (str or int, required): The value to count within the specified column or row.
+- axis (int or str, optional):
+    - 0 or "index": Indicates that the count will be performed on a row.
+    - 1 or "columns": Indicates that the count will be performed on a column.
+Output:
+- DataFrame: A new DataFrame containing the count of the specified value within the specified column or row.
+
+### String Operation Functions
+
+1. concatenate(table, label_a, label_b, glue, new_label, axis): Concatenates two rows or columns using a string as glue and appends the merged row or column to the table.
+Parameters:
+- table (DataFrame, required): The table in which the rows or columns will be concatenated.
+- label_a (str or int, required): The label of the first row or column to be concatenated.
+- label_b (str or int, required): The label of the second row or column to be concatenated.
+- glue (str, required): The string used to concatenate the two rows or columns.
+- new_label (str or int, required): The label of the new row or column created by the concatenation.
+- axis (str or int, required):
+    - 0 or "index": Indicates that rows will be concatenated.
+    - 1 or "columns": Indicates that columns will be concatenated.
+Output:
+- A pandas DataFrame.
+
+2. split(table, label, delimiter, new_label_list, axis): Separates rows or columns based on a string delimiter within the values.
+Parameters:
+- table (DataFrame, required): The table in which the rows or columns will be split.
+- label (str or int, required): The label of the row or column to be split.
+- delimiter (str, required): The delimiter to use for splitting the rows or columns.
+- new_label_list (list[str or int], required): The list of labels for the new rows or columns created by the split.
+- axis (str or int, required):
+    - 0 or 'index': Splits a row.
+    - 1 or 'columns': Splits a column.
+Output:
+- A pandas DataFrame.
+
+3. format(table, label, pattern, replace_with, axis): Formats the values in a row or column based on the specified pattern and "replace_with" using re.sub().
+Parameters:
+- table (DataFrame, required): The DataFrame in which the row or column will be formatted.
+- label (str or int, required): The label of the row or column to be formatted.
+- pattern (str, required): The regex pattern to apply to the values, use parentheses to capture groups.
+- replace_with (str, required): The string or backreference to replace the matched pattern with.
+- axis (str or int, required):
+    - 0 or "index": Indicates to format a row.
+    - 1 or "columns": Indicates to format a column.
+Output:
+- A pandas DataFrame.

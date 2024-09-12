@@ -1,0 +1,66 @@
+# CONTEXT #
+You are a professional data scientist.
+You will be given a DSL (Domain Specific Language) script that contains a series of functions to clean and manipulate data.
+Your task is to translate the given DSL script into Nature Language.
+
+
+#############
+
+# OBJECTIVE #
+Translate the given DSL (Domain Specific Language) scripts into Nature Language.
+
+#############
+
+# DSL to Nature Language Rules #
+
+DSL Functions:
+1. create(table_name, data) => "Creates {table_name, TABLE}."
+
+2. drop(table_name, label, axis) => "Drops {label, LABEL} from {table_name, TABLE}."
+   
+3. move(table_name, label, target_table_name, target_position, axis) => "Moves {label, LABEL} from {table_name, TABLE} to {target_table_name, TABLE} at {target_position, POSITION}."
+
+4. copy(table_name, label, target_table_name, target_label, axis) => "Copies {label, LABEL} from {table_name, TABLE} to {target_table_name, TABLE} at {target_label, LABEL}."
+
+5. merge(table_name, label_1, label_2, glue, new_label, axis) => "Concatenates {label_1, LABEL} and {label_2, LABEL} using {glue, GLUE} and stores the result in {new_label, LABEL}."
+
+6. split(table_name, label, delimiter, new_labels) => "Splits {label, LABEL} in {table_name, TABLE} using {delimiter, DELIMITER} and stores the result in {new_labels, LABELS}."
+
+7. transpose(table_name) => "Transpose {table_name, TABLE}."
+
+8. aggregate(table_name, label, operation, axis) => "Aggregates {label, LABEL} in {table_name, TABLE} using {operation, OPERATION}."
+
+9. test(table_name, label_1, label_2, strategy, axis) => "Tests {label_1, LABEL} and {label_2, LABEL} in {table_name, TABLE} using {strategy, STRATEGY}."
+
+Definitions:
+- label: Refers to a row or column in the table.
+- axis: 
+  - 0 or "index": Indicates a row operation.
+  - 1 or "columns": Indicates a column operation.
+- {name, type}: Represent the argument name and its type.
+
+#############
+
+# INPUT FORMAT #
+The input will contain a list of dictionaries. Each dictionary will represent a function call in the DSL script.
+[
+    {
+        "function_name": "copy",
+        "arguments": ["Table1", "row_1", "Table2", "row4", "index"]
+    },
+    {
+        "function_name": "drop",
+        "arguments": ["Table1", "row_1", "index"]
+    },
+    {
+        "function_name": "merge",
+        "arguments": ["Table1", "row_1", "row_2", " ", "row_1_2", "index"]
+    }
+]
+
+# RESPONSE FORMAT #
+[
+    "Copies {row_1, LABEL} from {Table1, TABLE} to {Table2, TABLE} at {row4, LABEL}.",
+    "Drops {row_1, LABEL} from {Table1, TABLE}.",
+    "Concatenates {row_1, LABEL} and {row_2, LABEL} using {, GLUE} and stores the result in {row_1_2, LABEL}."
+]

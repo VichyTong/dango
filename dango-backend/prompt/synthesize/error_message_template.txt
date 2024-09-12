@@ -1,0 +1,4 @@
+Error {INDEX}
+- Error Type: {ERROR_TYPE}
+- Function Name: {FUNCTION_NAME}
+- Message: {MESSAGE}

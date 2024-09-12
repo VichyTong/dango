@@ -1,0 +1,226 @@
+# CONTEXT #
+You are a professional DSL (Domain Specific Language) expert.
+You will be given a required table list, a DSL functions list in a JSON list format, and a step-by-step plan.
+You need to create a small Python code snippet that executes the given DSL function.
+
+#############
+
+# OBJECTIVE #
+Create a small Python code snippet that executes the given DSL function.
+
+#############
+
+# DSL GRAMMAR #
+{SELECTED_DSL_GRAMMAR}
+
+### Database Functions
+
+save_table(table, table_name): Saves a table to the database.
+Parameters:
+- table (str, required): The table to be saved. The table should be a pandas DataFrame.
+- table_name (str, required): The name of the table to be saved, it should end with ".csv".
+Output:
+- None
+
+delete_table(table_name): Deletes a table from the database.
+Parameters:
+- table_name (str, required): The name of the table to be deleted.
+Output:
+- None
+
+load_table(table_name): Loads a table from the database.
+Parameters:
+- table_name (str, required): The name of the table to be loaded.
+Output:
+- A pandas DataFrame.
+
+#############
+
+# GUIDELINES #
+
+1. All output should include the save_table function.
+2. When creating a new table using the save_table function, ensure the table is formatted as "{name}_v{version}.csv". Please start the version from 0.
+3. When using merge_table function, here is the naming convention for the tables:
+- merge_table function: "merged_v0.csv"
+4. The row indexes are strings start from "1" and should be enclosed in double quotes.
+5. Notice the number of output arguments for each function and assign them accordingly.
+
+#############
+
+# INPUT #
+- Required Tables: A list of table names that are required to perform the DSL functions.
+- DSL Program: A JSON list containing the DSL functions to be executed.
+- Step-by-step Plan: A natural language description of the DSL functions to be executed.
+
+#############
+
+# OUTPUT #
+Your output should between ``` tags and contain the Python code snippet that executes the given DSL function.
+
+#############
+
+# EXAMPLES #
+
+Example 1:
+'''
+- INPUT:
+Required Tables: 
+["test_result_v0.csv", "data_v0.csv"]
+
+DSL Program:
+[
+    {
+        "function_name": "create",
+        "arguments": ["test_result_v0.csv", 1, 2]
+    },
+    {
+        "function_name": "test",
+        "arguments": ["data_v0.csv", "age", "t-test", "columns"]
+    },
+    {
+        "function_name": "assign",
+        "arguments": ["test_result_v0.csv", 0, 0, 0, 0, "statistic"]
+    },
+    {
+        "function_name": "assign",
+        "arguments": ["test_result_v0.csv", 0, 0, 1, 1, "p_value"]
+    }
+]
+
+User Intents:
+Create a new table "test_result.csv" with 1 row and 2 columns. Perform a t-test on the column "age" in the table "data.csv" and store the results in the "test_result.csv".
+
+- OUTPUT:
+```
+data = load_table("data_v0.csv")
+test_result = create("test_result_v0.csv", 1, 2)
+
+statistic, p_value = test(data, "age", "t-test", "columns")
+test_result = assign(test_result, 0, 0, 0, 0, statistic)
+test_result = assign(test_result, 0, 0, 1, 1, p_value)
+
+save_table(test_result, "test_result_v0.csv")
+```
+'''
+
+Example 2:
+'''
+- INPUT:
+Required Tables: 
+["dataset_v1.csv", "New_v0.csv"]
+
+DSL Program:
+[
+    {
+        "function_name": "copy",
+        "arguments": ["dataset_v1.csv", "age", "New_v0.csv", "age", "columns"]
+    },
+    {
+        "function_name": "copy",
+        "arguments": ["dataset_v1.csv", "sex", "New_v0.csv", "sex", "columns"]
+    },
+    {
+        "function_name": "drop",
+        "arguments": ["dataset_v1.csv", "age", "columns"]
+    },
+    {
+        "function_name": "drop",
+        "arguments": ["dataset_v1.csv", "sex", "columns"]
+    },
+    {
+        "function_name": "move",
+        "arguments": ["data_v0.csv", "sum", "New_v0.csv", "sum", "columns"]
+    }
+]
+
+User Intents:
+Copy the columns "age" and "sex" from the table "dataset_v1.csv" to the table "New_v0.csv". Then, drop the columns "age" and "sex" from the table "dataset_v1.csv". Finally, move the 'sum' column from the table "data_v0.csv" to the table "New_v0.csv".
+
+- OUTPUT:
+```
+dataset = load_table("dataset_v1.csv")
+New = load_table("New_v0.csv")
+
+New = copy(dataset, "age", New, "age", "columns")
+New = copy(dataset", "sex", New, "sex", "columns")
+dataset = drop(dataset, "age", "columns")
+dataset = drop(dataset, "sex", "columns")
+dataset, New = move(dataset, "sum", New, "sum", "columns")
+
+save_table(dataset, "dataset_v1.csv")
+save_table(New, "New_v0.csv")
+```
+'''
+
+Example 3:
+'''
+- INPUT:
+Required Tables: 
+["sales_data_v0.csv", "employees_v0.csv"]
+
+DSL Program:
+[
+    {
+        "function_name": "drop",
+        "condition": "if column \"Revenue\" < 500",
+        "arguments": ["sales_data_v0.csv", "Revenue", "index"]
+    },
+    {
+        "function_name": "split",
+        "condition": "if column \"FullName\" contains \" \"",
+        "arguments": ["employees.csv_v0", "FullName", " ", ["FirstName", "LastName"]]
+    },
+    {
+        "function_name": "swap",
+        "arguments": ["employees_v0.csv", "FirstName", "employees_v0.csv", "LastName", "columns"]
+    }
+]
+
+User Intents:
+Drop the rows from the table "sales_data_v0.csv" where the column "Revenue" is less than 500. Split the column "FullName" in the table "employees_v0.csv" into two columns "FirstName" and "LastName".
+
+- OUTPUT:
+```
+sales_data = load_table("sales_data_v0.csv")
+employees = load_table("employees_v0.csv")
+
+delete_index_list = []
+for index, row in sales_data.iterrows():
+    if row["Revenue"] < 500:
+        delete_index_list.append(index)
+
+for index in delete_index_list:
+    sales_data = drop(sales_data, index, "index")
+
+employees = split(employees, "FullName", " ", ["FirstName", "LastName"], "columns")
+employees, _ = swap(employees, "FirstName", employees, "LastName", "columns")
+
+save_table(sales_data, "sales_data_v0.csv")
+save_table(employees, "employees_v0.csv")
+```
+'''
+
+Example 4:
+'''
+- INPUT:
+Required Tables: 
+["table-4.csv"]
+
+DSL Program:
+[
+    {
+        "function_name": "move",
+        "arguments": ["table-4.csv", "age", "table-4.csv", "name", "columns"]
+    }
+]
+
+User Intents:
+Move the column "age" from the table "table-4.csv" to the column "name" in the same table.
+
+- OUTPUT:
+```
+table = load_table("table-4.csv")
+_, table = move(table, "age", table, "name", "columns")
+save_table(table, "table-4.csv")
+```
+'''

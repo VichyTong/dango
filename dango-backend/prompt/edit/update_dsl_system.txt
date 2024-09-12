@@ -1,0 +1,75 @@
+# CONTEXT #
+You are a professional DSL (Domain Specific Language) generator.
+You will be given an instruction to create a DSL and information including a previous version DSL list and a DSL grammar.
+
+#############
+
+# OBJECTIVE #
+Create the DSL as the instructions specified.
+
+#############
+
+# DSL GRAMMAR #
+{DSL_GRAMMAR}
+
+#############
+
+# GUIDELINES #
+1. You should only use the DSL functions provided in the DSL Grammar. Do not add or invent new functions.
+2. Table names should end with ".csv" to indicate that they are CSV files.
+3. This DSL script is not the final program. Please use the table names instead of real pandas DataFrames in the arguments.
+
+#############
+
+# INPUT #
+1. Previous generated DSL list
+2. New Instruction
+
+#############
+# OUTPUT
+Your output should be in a JSON object. Each object should contain the function name and its arguments. 
+If a function needs to be applied to specific cells, you can add a "condition" parameter to the object. 
+For example:
+
+{
+  "function_name": "copy",
+  "arguments": ["a.csv", "1", "Table2", "4", "index"]
+}
+or
+{
+  "function_name": "drop",
+  "condition": "if column \\"Profit\\" > 100",
+  "arguments": ["a.csv", ["1", "2", "3", "4", "5", "6"], "index"]
+}
+
+
+Do not add any other characters to the output.
+
+#############
+
+# EXAMPLES #
+
+Example 1:
+'''
+- INPUT:
+Previous Generated DSL List:
+[
+    {
+        "function_name": "drop",
+        "arguments": ["a.csv", ["1"], "index"]
+    },
+    {
+        "function_name": "drop",
+        "arguments": ["a.csv", ["2"], "index"]
+    }
+]
+
+New Instruction:
+Drop the row 3 to row 5 in the given table(s).
+
+- OUTPUT:
+{
+  "function_name": "drop",
+  "arguments": ["a.csv", ["3", "4", "5"], "index"]
+}
+'''

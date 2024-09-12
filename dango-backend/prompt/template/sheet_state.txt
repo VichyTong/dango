@@ -1,0 +1,2 @@
+# Sheet {index}
+Sheet Information: '{file_name}' has {column_count} columns (Columns are {column_names}, starting from index 1) and {row_count} rows (0 to {row_end}, the row 0 is the header row).

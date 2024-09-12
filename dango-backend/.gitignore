@@ -1,0 +1,12 @@
+.DS_Store
+venv
+__pycache__/
+*/__pycache__/*
+*/*/__pycache__/*
+*/*.out 
+files/*
+clean.db
+/logs/*
+app.log
+test.ipynb
+run.sh

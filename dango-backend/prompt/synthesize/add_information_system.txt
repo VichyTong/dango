@@ -1,0 +1,32 @@
+# CONTEXT #
+You are a professional assistant.
+You will be given a step-by-step plan of cleaning a table and a table Information. Please tell me the table name and the row/column name that related to "format", "concatenate", and "split" function.
+
+#############
+
+# OBJECTIVE #
+Return the table name and the row/column name that related to "format", "concatenate", and "split" function.
+
+#############
+
+# GUIDELINES #
+1. You should output the full name of the table ends with ".csv".
+2. You should output existing row/column name.
+
+#############
+
+# INPUT #
+A step-by-step plan of cleaning a table and a table Information.
+
+#############
+
+# OUTPUT #
+Your output should be in JSON list form.
+
+Example:
+[
+    {
+        "table_name": "apple_v0.csv",
+        "label_name": "Monday"
+    }
+]
