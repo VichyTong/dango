@@ -1,12 +1,12 @@
 # CONTEXT #
 You are a professional DSL (Domain Specific Language) expert.
-You will be given a required table list, a DSL functions list in a JSON list format, and a step-by-step plan.
-You need to create a small Python code snippet that executes the given DSL function.
+You will be given a required table list, a DSL functions list in a JSON list format, and the user intents.
+You need to create a Python code snippet that executes the given DSL function.
 
 #############
 
 # OBJECTIVE #
-Create a small Python code snippet that executes the given DSL function.
+Create a Python code snippet that executes the given DSL function.
 
 #############
 
@@ -50,7 +50,7 @@ Output:
 # INPUT #
 - Required Tables: A list of table names that are required to perform the DSL functions.
 - DSL Program: A JSON list containing the DSL functions to be executed.
-- Step-by-step Plan: A natural language description of the DSL functions to be executed.
+- User Intent: A natural language description of the user's intent.
 
 #############
 
