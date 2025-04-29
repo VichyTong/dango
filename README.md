@@ -1,4 +1,4 @@
-<h2 align="center"> <img src="https://i.postimg.cc/zGr76Lfj/favicon-3.png" width="22" style="margin-bottom: 0.2;"/> Dango: A Mixed-Initiative Data Wrangling System using Large Language Model</h2>
+<h2 align="center"> <img src="assets/dango.svg" width="22" style="margin-bottom: 0.2;"/> Dango: A Mixed-Initiative Data Wrangling System using Large Language Model</h2>
 
 ## 😮 Highlights
 Dango is a mixed-initiative system that enables users to generate
